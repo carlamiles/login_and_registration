@@ -9,7 +9,7 @@ def index(request):
 
 def success(request):
     print('currently displaying the success page!')
-    return render(request, 'login_app/success.html', context)
+    return render(request, 'login_app/success.html')
 
 def add_user(request):
     print('*'*50)
@@ -27,7 +27,7 @@ def add_user(request):
         new_user = User.objects.last()
         request.session['new_user_id'] = new_user.id
         request.session['name'] = new_user.first_name
-        return render(request, 'login_app/success.html')
+        return redirect('/success')
 
 def login(request):
     print('the login method is running')
@@ -41,7 +41,7 @@ def login(request):
         user_match = User.objects.get(email_address=request.POST['email_log'], password=request.POST['password_log'])
         request.session['new_user_id'] = user_match.id
         request.session['name'] = user_match.first_name
-        return render(request, 'login_app/success.html')
+        return redirect('/success')
 
 def logout(request):
     print('the logout method is running')
