@@ -6,23 +6,26 @@ class UserManager(models.Manager):
     def basic_validator(self, postData):
         errors = {}
         if len(postData['first_name']) < 2:
-            errors["first_name"] = "First name should be at least 2 characters"
+            errors["first_name_min"] = "First name should be at least 2 characters"
         if postData['first_name'].isalpha() == False:
-            errors["first_name"] = "First name must be letters only"
+            errors["first_name_alpha"] = "First name must be letters only"
         if len(postData['last_name']) < 2:
-            errors["last_name"] = "Last name should be at least 2 characters"
+            errors["last_name_min"] = "Last name should be at least 2 characters"
         if postData['last_name'].isalpha() == False:
-            errors["last_name"] = "Last name must be letters only"
+            errors["last_name_alpha"] = "Last name must be letters only"
         if len(postData['password_reg']) < 8:
-            errors["password_reg"] = "Password should be at least 8 characters"
+            errors["password_reg_min"] = "Password should be at least 8 characters"
         if postData['password_reg'] != postData['confirm_password_reg']:
-            errors["password_reg"] = "Password and Confirm PW must match"
+            errors["password_reg_invalid"] = "Password and Confirm PW must match"
         return errors
     def login_validator(self, postData):
         errors = {}
-        user_match_list = User.objects.filter(email_address=postData['email_log'], password=postData['password_log'])
-        if user_match_list.count() is not 1:
-            errors["password_log"] = "Your login info is incorrect"
+        if len(postData['email_log']) == 0:
+            errors['email_log_empty'] = 'Please enter your email'
+        if len(postData['password_log']) == 0:
+            errors['password_log_empty'] = 'Please enter your password'
+        if not EMAIL_REGEX.match(postData['email_log']):
+            errors['email_log_invalid'] = "Please enter a valid email address"
         return errors
 
 class User(models.Model):
@@ -30,7 +33,6 @@ class User(models.Model):
     last_name = models.CharField(max_length=255)
     email_address = models.EmailField(max_length=255)
     password = models.CharField(max_length=55)
-    password_conf = models.CharField(max_length=55)
     objects = UserManager()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
